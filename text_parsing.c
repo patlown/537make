@@ -4,7 +4,7 @@ char* double_buff(char* buff, int cursize);
 void skip_empty(int* c,FILE* fp);
 char* read_line(int* c, FILE* fp);
 
-target** parseFile(char * filename){
+target_node* parseFile(char * filename){
 	FILE *fp;
 
 	fp = fopen(filename, "r");
@@ -19,6 +19,36 @@ target** parseFile(char * filename){
 	// 	get_next_target(c,fp) 
 	return NULL;
 }
+
+
+target* get_target(int *c, FILE* fp){
+	
+
+	char* line = read_line(c,fp);
+	char* s,p = line;
+	if(!valid_target(s)){
+		return NULL;
+	}	
+
+	while(*p != '\n' && *p != ':'){
+		p++;
+
+	}
+	if(*p == '\n'){
+		//return incorrectly formatted line no :
+	}
+	*p = '\0';
+	t -> name = s;
+
+	while(*p != '\n'){
+		while( *p != '\n' && *p == ' ')
+	}
+
+
+
+}
+
+
 /*
 
 
@@ -31,9 +61,6 @@ void skip_empty(int* c,FILE* fp){
 	}
 }
 
-// target* get_target(char* c){
-	
-// }
 
 char* read_line(int* c, FILE* fp){
 	char* buff = malloc(buffer_init);
@@ -57,6 +84,10 @@ char* read_line(int* c, FILE* fp){
 		buff[index++] = (char)*c;
 		*c = fgetc(fp);
 	}
+	//check that line isn't empty
+	if(index == 0){
+		return NULL;
+	}
 	if(index == cur_size){
 			char* buff_new = double_buff(buff,cur_size);
 			if(!buff_new){
@@ -68,6 +99,7 @@ char* read_line(int* c, FILE* fp){
 			}
 	}
 	buff[index] = '\n';
+
 	return buff;
 }
 
