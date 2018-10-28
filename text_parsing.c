@@ -22,7 +22,9 @@ target_node* parseFile(char * filename){
 
 
 target* get_target(int *c, FILE* fp){
-	
+	target* t = malloc(sizeof(target));
+	t->dependencies = malloc(sizeof(list_node));
+	list_node *nodeptr = t->dependencies;
 
 	char* line = read_line(c,fp);
 	char* s,p = line;
@@ -38,10 +40,21 @@ target* get_target(int *c, FILE* fp){
 		//return incorrectly formatted line no :
 	}
 	*p = '\0';
-	t -> name = s;
+	t->name = s;
 
-	while(*p != '\n'){
-		while( *p != '\n' && *p == ' ')
+	while(1){
+		while(*p == ' ') p++;
+		if(*p == '\n') break;
+		s = p;
+		while(*p!=' ' && *p!='\n') p++;
+		if(*p ==' '){
+			*p = '\0';
+		}
+		List_node *tempnode = malloc(sizeof(List_node));
+		tempnode->val = s;
+		nodeptr->next = tempnode;
+		nodeptr = nodeptr->next;
+
 	}
 
 
