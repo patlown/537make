@@ -9,6 +9,13 @@ int valid_target(char* s);
 int line_count;
 int *c;
 
+/*TODO:
+make sure target_node->next is pointing to NULL if it isn't pointing to another target node.
+I rely on that when traversing the target_nodes while building the graph.
+*/
+
+//TODO: can you briefly comment all the loops so we can see things at a higher level when reviewing the code.
+
 target_node* parseFile(char * filename){
 	num_targets = 0;
 	FILE *fp;

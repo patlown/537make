@@ -22,7 +22,6 @@ typedef struct{
 typedef struct target_node{
 	target* t;
 	struct target_node* next;
-	struct target_node** children;
 }target_node;
 
 
