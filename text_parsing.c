@@ -10,6 +10,7 @@ int line_count;
 int *c;
 
 target_node* parseFile(char * filename){
+	num_targets = 0;
 	FILE *fp;
 	target_node *dummy = malloc(sizeof(target_node));
 	target_node *node_ptr = dummy;
@@ -96,9 +97,15 @@ target* get_target(int *c, FILE* fp){
 	}
 	t->dependencies = t->dependencies->next;
 	t->cmds = t->cmds->next;
+	num_targets++;
 	return t;
 }
-
+int valid_target(char *s){
+	return 0;
+}
+int valid_cmd(char *s){
+	return 0;
+}
 
 /*
 

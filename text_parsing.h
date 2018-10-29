@@ -5,6 +5,7 @@
 #include <string.h>
 const int buffer_limit = 1024;
 const int buffer_init = 64;
+int num_targets;
 
 typedef struct list_node{
 	char* val;
@@ -21,6 +22,7 @@ typedef struct{
 typedef struct target_node{
 	target* t;
 	struct target_node* next;
+	struct target_node** children;
 }target_node;
 
 

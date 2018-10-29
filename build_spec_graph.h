@@ -6,9 +6,15 @@
 typedef struct{
 
 	target_node* tn;
-
+	target_node** children;
 
 }graph_node;
+
+typedef struct target_node_list{
+	char *name;
+	target_node* addr;
+	target_node* next;
+}target_node_list;
 
 
 
