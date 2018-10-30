@@ -82,7 +82,7 @@ graph_node_list* build_graph_node_list(target_node* curr_target_node){
     while(curr_target_node != NULL){
         graph_node* new_graph_node = create_target_graph_node(curr_target_node);
         //add to graph_node list
-        add_graph_node(gnl,new_graph_node);
+        add_graph_node(new_graph_node);
         curr_target_node = curr_target_node->next;
     }
 
