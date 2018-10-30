@@ -1,4 +1,6 @@
 #include "build_spec_graph.h"
+extern graph_node_list* start;
+extern graph_node_list* end;
 
 /*
 This function will create a graph node that has a non-NULL target_node pointer, this means this graph_node is a target and will have dependencies
@@ -103,12 +105,16 @@ graph_node_list* build_graph_node_list(target_node* curr_target_node){
 
     //3. Second pass
     while(gnl != NULL){
+        //isolate the target we are looking at
         target* curr_target = gnl->addr->gnt;
+
+        //isolate the list of dependencies for that target
         list_node* curr_dep = curr_target->dependencies;
+
         while(curr_dep != NULL){
             //if the current dependency we are examining does not exist in the gnl, create a new graph node and add it
             if(!exists_in_graph_node_list(curr_dep->val)){
-
+                
             }
             curr_dep = curr_dep->next;
         }
@@ -117,4 +123,9 @@ graph_node_list* build_graph_node_list(target_node* curr_target_node){
     //iterate through
     return NULL;
 
+}
+
+
+int main(){
+    return 1;
 }
