@@ -6,23 +6,26 @@
 const int buffer_limit = 1024;
 const int buffer_init = 64;
 int num_targets;
+typedef struct list_node list_node;
+typedef struct target target;
+typedef struct target_node target_node;
 
-typedef struct list_node{
+struct list_node{
 	char* val;
 	struct list_node* next;
 
-}list_node;
+};
 
-typedef struct{
+struct{
 	char* name;
 	list_node* dependencies;
 	list_node* cmds;
-}target;
+};
 
-typedef struct target_node{
+struct target_node{
 	target* t;
 	struct target_node* next;
-}target_node;
+};
 
 
 
