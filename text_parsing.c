@@ -20,6 +20,10 @@ Also make sure the ends of the dependency and cmds list_nodes have a NULL next, 
 
 //TODO: can you briefly comment all the loops so we can see things at a higher level when reviewing the code.
 
+/*
+TODO: I added a field to the dependencies and commands, if we can keep count of the size of their lists, I can more efficiently allocate graph node
+		children when building the graph.  Should be an easy enough addition.
+*/
 
 target_node* parseFile(char * filename){
 	num_targets = 0;

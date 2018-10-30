@@ -23,7 +23,9 @@ struct list_node{
 struct target{
 	char* name;
 	list_node* dependencies;
+	int deps_size;
 	list_node* cmds;
+	int cmds_size;
 };
 
 struct target_node{
