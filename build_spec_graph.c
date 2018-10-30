@@ -1,35 +1,5 @@
 #include "text_parsing.h"
 #include "build_spec_graph.h"
-/*
-this function will build a target node list for adding children to target nodes, use this
-once to get addresses to all the nodes.  When adding children to target nodes, check this list for addr
-to specific node. Logic of this function:
-1. Create a new graph_node_list
-2. First pass: traverse target nodes, creating graph nodes and adding them to the graph_node_list
-3. Second pass: traverse graph_node_list, for each graph_node in list, check it's target's dependencies, if any dependency is not in the graph_node_list
-    add it to graph node list, these will be graph_nodes that have NULL pointers to target's since the graph_node isn't a target, just a dependency
-4. Now graph_node_list has all target graph_nodes and non-target graph_nodes, use this list to create the dependency graph.
-*/
-graph_node_list* build_graph_node_list(target_node* curr_target_node){
-    if(curr_target_node == NULL){
-        //target list is empty return null
-        return NULL;
-    }
-
-    graph_node_list* gnl = create_graph_node_list();
-
-    //build all target graph nodes and add them to graph_node_list
-    while(curr_target_node != NULL){
-        graph_node* new_graph_node = create_target_graph_node(curr_target_node);
-        //add to graph_node list
-        add_graph_node(gnl,new_graph_node);
-        curr_target_node = curr_target_node->next;
-    }
-
-    //iterate through
-    return NULL;
-
-}
 
 /*
 This function will create a graph node that has a non-NULL target_node pointer, this means this graph_node is a target and will have dependencies
@@ -88,4 +58,35 @@ void add_graph_node(graph_node_list* gnl, graph_node* gn){
    new_gnl_node->name = gn->name;
    new_gnl_node->addr = gn;
    new_gnl_node->next = NULL;
+}
+
+/*
+this function will build a target node list for adding children to target nodes, use this
+once to get addresses to all the nodes.  When adding children to target nodes, check this list for addr
+to specific node. Logic of this function:
+1. Create a new graph_node_list
+2. First pass: traverse target nodes, creating graph nodes and adding them to the graph_node_list
+3. Second pass: traverse graph_node_list, for each graph_node in list, check it's target's dependencies, if any dependency is not in the graph_node_list
+    add it to graph node list, these will be graph_nodes that have NULL pointers to target's since the graph_node isn't a target, just a dependency
+4. Now graph_node_list has all target graph_nodes and non-target graph_nodes, use this list to create the dependency graph.
+*/
+graph_node_list* build_graph_node_list(target_node* curr_target_node){
+    if(curr_target_node == NULL){
+        //target list is empty return null
+        return NULL;
+    }
+    //1.
+    graph_node_list* gnl = create_graph_node_list();
+
+    //2. First pass
+    while(curr_target_node != NULL){
+        graph_node* new_graph_node = create_target_graph_node(curr_target_node);
+        //add to graph_node list
+        add_graph_node(gnl,new_graph_node);
+        curr_target_node = curr_target_node->next;
+    }
+
+    //iterate through
+    return NULL;
+
 }

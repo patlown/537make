@@ -34,4 +34,4 @@ graph_node_list* end;
 
 
 
-#endif BUILD_SPEC_GRAPH_H
+#endif
