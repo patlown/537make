@@ -8,6 +8,8 @@ int valid_cmd(char* s);
 int valid_target(char* s);
 int line_count;
 int *c;
+extern const int buffer_limit;
+extern const int buffer_init;
 
 /*TODO:
 make sure target_node->next is pointing to NULL if it isn't pointing to another target node.

@@ -5,8 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-const int buffer_limit = 1024;
-const int buffer_init = 64;
+global const int buffer_limit = 1024;
+global const int buffer_init = 64;
 
 int num_targets;
 
