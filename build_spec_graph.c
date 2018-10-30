@@ -113,7 +113,7 @@ graph_node_list* build_graph_node_list(target_node* curr_target_node){
 
         while(curr_dep != NULL){
             //if the current dependency we are examining does not exist in the gnl, create a new graph node and add it
-            if(!exists_in_graph_node_list(curr_dep->val)){
+            if(!exists_in_graph_node_list(gnl,curr_dep->val)){
                 
             }
             curr_dep = curr_dep->next;
