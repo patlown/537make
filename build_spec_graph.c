@@ -1,6 +1,7 @@
 #include "build_spec_graph.h"
 extern graph_node_list* start;
 extern graph_node_list* end;
+extern int gnl_size++;
 
 /*
 This function will create a graph node that has a non-NULL target_node pointer, this means this graph_node is a target and will have dependencies
@@ -10,7 +11,18 @@ graph_node* create_target_graph_node(target_node* curr_target_node){
     graph_node* gn = malloc(sizeof(graph_node));
     gn->name = curr_target_node->t->name;
     gn->gnt = curr_target_node->t;
-    gnl_size++;
+    return gn;
+}
+
+/*
+This function will create a graph node with a NULL target_node pointer, pass it a dependency list element and it will create a graph node with the same name.
+This does not add children to the graph_nodes, that will be handled on a graph_node by graph_node basis after the graph_node_list is created.
+*/
+graph_node* create_non_target_graph_node(list_node* curr_dep){
+    graph_node* gn = malloc(sizeof(graph_node));
+    gn->name = curr_dep->val;
+    //wipe any junk values that gnt may be pointing to
+    gn->gnt = NULL;
     return gn;
 }
 
@@ -38,8 +50,8 @@ void add_graph_node(graph_node* gn){
         start->next = NULL;
         /*
         Don't add a next to it, we now have start and end pointing to the beginning node, once we 
-        add nodes from here on out, we will create a new graph_node_list node and make ends next equal to it
-        set end to NULL so we make sure there are no junk values that throw us off
+        add nodes from here on out, we will create a new graph_node_list node and make ends next equal to it;
+        set end->next to NULL so we make sure there are no junk values that throw us off
         */
     }
     /*
@@ -47,6 +59,7 @@ void add_graph_node(graph_node* gn){
     1. create new graph_node_list pointer
     2. have end->next point to it and move end to end->next
     3. set name of new graph_node_list to gn name, set addr = gn, set next = NULL
+    4. increment size of gnl
 
     setting end/new_gnl_node ->next = NULL makes sure we have a NULL value for next at the end of the gnl when iterating it.
     */
@@ -59,9 +72,11 @@ void add_graph_node(graph_node* gn){
    new_gnl_node->name = gn->name;
    new_gnl_node->addr = gn;
    new_gnl_node->next = NULL;
+   gnl_size++;
 }
 /* 
-This function returns true if the passed in name exists as a graph node in the gnl
+This function returns true if the passed in name exists as a graph node in the gnl.
+This function iterates the list and assumes it starts at the beginning
 */
 int exists_in_graph_node_list(graph_node_list* gnl, char* name){
     graph_node_list* curr = gnl;
@@ -104,9 +119,12 @@ graph_node_list* build_graph_node_list(target_node* curr_target_node){
     }
 
     //3. Second pass
-    while(gnl != NULL){
+
+    //curr_gnle :: curr_(g)raph_(n)ode_(l)ist_(e)lement, use this to iterate the list so that gnl is always pointing to the beginning of the list.
+    graph_node_list* curr_gnle = gnl;
+    while(curr_gnle != NULL){
         //isolate the target we are looking at
-        target* curr_target = gnl->addr->gnt;
+        target* curr_target = curr_gnle->addr->gnt;
 
         //isolate the list of dependencies for that target
         list_node* curr_dep = curr_target->dependencies;
@@ -114,14 +132,13 @@ graph_node_list* build_graph_node_list(target_node* curr_target_node){
         while(curr_dep != NULL){
             //if the current dependency we are examining does not exist in the gnl, create a new graph node and add it
             if(!exists_in_graph_node_list(gnl,curr_dep->val)){
-                
+                add_graph_node(create_non_target_graph_node(curr_dep));
             }
             curr_dep = curr_dep->next;
         }
     }
-
-    //iterate through
-    return NULL;
+    
+    return gnl;
 
 }
 
