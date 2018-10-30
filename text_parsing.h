@@ -16,7 +16,7 @@ struct list_node{
 
 };
 
-struct{
+struct target{
 	char* name;
 	list_node* dependencies;
 	list_node* cmds;

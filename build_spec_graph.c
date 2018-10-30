@@ -28,7 +28,7 @@ graph_node_list* create_graph_node_list(){
 /* 
 This function will add a graph node to the graph node list.
 */
-void add_graph_node(graph_node_list* gnl, graph_node* gn){
+void add_graph_node(graph_node* gn){
     
     //check if start name = NULL, this will tell us whether our list is currently empty and start = end.
     if (start->name == NULL){
