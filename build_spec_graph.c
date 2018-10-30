@@ -1,7 +1,7 @@
 #include "build_spec_graph.h"
 extern graph_node_list* start;
 extern graph_node_list* end;
-extern int gnl_size++;
+extern int gnl_size;
 
 /*
 This function will create a graph node that has a non-NULL target_node pointer, this means this graph_node is a target and will have dependencies
@@ -204,7 +204,7 @@ void build_dependency_graph(graph_node_list* gnl){
             //use i to point children pointers
             int i = 0;
             while(curr_dep != NULL){
-                curr_graph_node->children[i] = get_graph_node(gnl,curr_dep->name);
+                curr_graph_node->children[i] = get_graph_node(gnl,curr_dep->val);
             }
         }
         curr_gnle = curr_gnle->next;
