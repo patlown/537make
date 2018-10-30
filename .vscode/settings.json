@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "text_parsing.h": "c"
+        "text_parsing.h": "c",
+        "build_spec_graph.h": "c"
     }
 }

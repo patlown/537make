@@ -1,5 +1,5 @@
-#ifndef BUILD_SPEC_GRAPH_H
-#define BUILD_SPEC_GRAPH_H
+#ifndef BUILD_SPEC_GRAPH
+#define BUILD_SPEC_GRAPH
 
 #include "text_parsing.h"
 
