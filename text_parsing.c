@@ -14,9 +14,12 @@ extern const int buffer_init;
 /*TODO:
 make sure target_node->next is pointing to NULL if it isn't pointing to another target node.
 I rely on that when traversing the target_nodes while building the graph.
+
+Also make sure the ends of the dependency and cmds list_nodes have a NULL next, as I'm assuming that when I traverse them.
 */
 
 //TODO: can you briefly comment all the loops so we can see things at a higher level when reviewing the code.
+
 
 target_node* parseFile(char * filename){
 	num_targets = 0;

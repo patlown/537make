@@ -58,6 +58,22 @@ void add_graph_node(graph_node* gn){
    new_gnl_node->addr = gn;
    new_gnl_node->next = NULL;
 }
+/* 
+This function returns true if the passed in name exists as a graph node in the gnl
+*/
+int exists_in_graph_node_list(graph_node_list* gnl, char* name){
+    graph_node_list* curr = gnl;
+    while(curr != NULL){
+        if(strcmp(curr->name, name) == 0){
+            //found a match, let's move on
+            return 1;
+        }else{
+            curr = curr->next;
+        }
+    }
+    return 0;
+}
+
 
 /*
 this function will build a target node list for adding children to target nodes, use this
@@ -83,6 +99,19 @@ graph_node_list* build_graph_node_list(target_node* curr_target_node){
         //add to graph_node list
         add_graph_node(new_graph_node);
         curr_target_node = curr_target_node->next;
+    }
+
+    //3. Second pass
+    while(gnl != NULL){
+        target* curr_target = gnl->addr->gnt;
+        list_node* curr_dep = curr_target->dependencies;
+        while(curr_dep != NULL){
+            //if the current dependency we are examining does not exist in the gnl, create a new graph node and add it
+            if(!exists_in_graph_node_list(curr_dep->val)){
+
+            }
+            curr_dep = curr_dep->next;
+        }
     }
 
     //iterate through
