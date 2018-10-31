@@ -1,4 +1,7 @@
 #include "build_spec_graph.h"
+extern graph_node_list* start;
+extern graph_node_list* end;
+extern int gnl_size;
 
 /*
 This function will create a graph node that has a non-NULL target_node pointer, this means this graph_node is a target and will have dependencies
@@ -8,7 +11,22 @@ graph_node* create_target_graph_node(target_node* curr_target_node){
     graph_node* gn = malloc(sizeof(graph_node));
     gn->name = curr_target_node->t->name;
     gn->gnt = curr_target_node->t;
-    gnl_size++;
+    //set this to NULL for easy check whether children have been allocated
+    gn->children = NULL;
+    return gn;
+}
+
+/*
+This function will create a graph node with a NULL target_node pointer, pass it a dependency list element and it will create a graph node with the same name.
+This does not add children to the graph_nodes, that will be handled on a graph_node by graph_node basis after the graph_node_list is created.
+*/
+graph_node* create_non_target_graph_node(list_node* curr_dep){
+    graph_node* gn = malloc(sizeof(graph_node));
+    gn->name = curr_dep->val;
+    //wipe any junk values that gnt may be pointing to
+    gn->gnt = NULL;
+    //set this to NULL since this has no dependencies/children in graph, don't want to accidentally read junk values
+    gn->children = NULL;
     return gn;
 }
 
@@ -36,8 +54,8 @@ void add_graph_node(graph_node* gn){
         start->next = NULL;
         /*
         Don't add a next to it, we now have start and end pointing to the beginning node, once we 
-        add nodes from here on out, we will create a new graph_node_list node and make ends next equal to it
-        set end to NULL so we make sure there are no junk values that throw us off
+        add nodes from here on out, we will create a new graph_node_list node and make ends next equal to it;
+        set end->next to NULL so we make sure there are no junk values that throw us off
         */
     }
     /*
@@ -45,6 +63,7 @@ void add_graph_node(graph_node* gn){
     1. create new graph_node_list pointer
     2. have end->next point to it and move end to end->next
     3. set name of new graph_node_list to gn name, set addr = gn, set next = NULL
+    4. increment size of gnl
 
     setting end/new_gnl_node ->next = NULL makes sure we have a NULL value for next at the end of the gnl when iterating it.
     */
@@ -57,9 +76,11 @@ void add_graph_node(graph_node* gn){
    new_gnl_node->name = gn->name;
    new_gnl_node->addr = gn;
    new_gnl_node->next = NULL;
+   gnl_size++;
 }
 /* 
-This function returns true if the passed in name exists as a graph node in the gnl
+This function returns true if the passed in name exists as a graph node in the gnl.
+This function iterates the list and assumes it starts at the beginning
 */
 int exists_in_graph_node_list(graph_node_list* gnl, char* name){
     graph_node_list* curr = gnl;
@@ -102,19 +123,95 @@ graph_node_list* build_graph_node_list(target_node* curr_target_node){
     }
 
     //3. Second pass
-    while(gnl != NULL){
-        target* curr_target = gnl->addr->gnt;
+
+    //curr_gnle :: curr_(g)raph_(n)ode_(l)ist_(e)lement, use this to iterate the list so that gnl is always pointing to the beginning of the list.
+    graph_node_list* curr_gnle = gnl;
+    while(curr_gnle != NULL){
+        //isolate the target we are looking at
+        target* curr_target = curr_gnle->addr->gnt;
+
+        //isolate the list of dependencies for that target
         list_node* curr_dep = curr_target->dependencies;
+
         while(curr_dep != NULL){
             //if the current dependency we are examining does not exist in the gnl, create a new graph node and add it
-            if(!exists_in_graph_node_list(curr_dep->val)){
-
+            if(!exists_in_graph_node_list(gnl,curr_dep->val)){
+                add_graph_node(create_non_target_graph_node(curr_dep));
             }
             curr_dep = curr_dep->next;
         }
     }
+    return gnl;
+}
 
-    //iterate through
+/*
+This function will return a pointer to graph_node pointers with size = to the size passed in.
+If the size is 0, ie target has no dependencies, children ptr is set to NULL and returned
+Use this to allocate space for graph_node children when building dependency graph.  DOES NOT point graph_node pointers to anything.
+*/
+graph_node** alloc_graph_node_children(int size){
+    graph_node** children_ptr;
+    if(size == 0){
+        children_ptr = NULL;
+    }else{
+        children_ptr = (graph_node**)malloc(size*sizeof(graph_node*));
+    }
+    
+    return children_ptr;
+}
+/*
+ASSUMES YOU ARE PASSING IN FIRST ELEMENT OF GRAPH_NODE_LIST
+
+This function will return the address of a graph_node given a name and a graph node list, if you built the graph_node_list from the info of the targets, a dependency should always exist
+in the list.  If it doesn't this will return NULL.  Using build_gnl and using the same gnl in this function should make sure you never get a NULL return.
+This function logic is similar/same as exists function
+*/
+graph_node* get_graph_node(graph_node_list* gnl, char* name){
+    graph_node_list* curr = gnl;
+    while(curr != NULL){
+        if(strcmp(curr->name, name) == 0){
+            //found a match, let's move on
+            return curr->addr;
+        }else{
+            curr = curr->next;
+        }
+    }
     return NULL;
+}
 
+/*
+This function will build a dependency graph given a built graph_node_list.  It will edit the graph_nodes within the graph_node_list.  The list can then be used to get a node where any
+node will have it's dependency structure needed to build.  The algorithm works as follows:
+
+    For each graph_node in the graph_node_list
+        if it is a target graph_node
+            allocate space for graph_node children w/ target->deps_size    
+            for each dependency
+                get address of dependency graph_node from list
+                set target graph_node child pointer to it
+*/
+void build_dependency_graph(graph_node_list* gnl){
+    graph_node_list* curr_gnle = gnl;
+    while(curr_gnle != NULL){
+        //isolate current graph_node
+        graph_node* curr_graph_node = curr_gnle->addr;
+        //isolate target of current graph_node
+        target* curr_target = curr_graph_node->gnt;
+        if(curr_target != NULL){
+            curr_graph_node->children = alloc_graph_node_children(curr_target->deps_size);
+            //isolate the current dependencies of the current target
+            list_node* curr_dep = curr_target->dependencies;
+            //use i to point children pointers
+            int i = 0;
+            while(curr_dep != NULL){
+                curr_graph_node->children[i] = get_graph_node(gnl,curr_dep->val);
+            }
+        }
+        curr_gnle = curr_gnle->next;
+    }
+}
+
+
+int main(){
+    return 1;
 }
