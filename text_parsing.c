@@ -73,6 +73,7 @@ target* get_target(int *c, FILE* fp){
 	}
 	if(*p == '\n'){
 		//return incorrectly formatted line no :
+		return NULL;
 	}
 	*p = '\0';
 	t->name = s;
@@ -112,10 +113,17 @@ target* get_target(int *c, FILE* fp){
 	num_targets++;
 	return t;
 }
+
 int valid_target(char *s){
-	return 0;
+	if(*s == '\t' || *s == ' '){
+		return 0;
+	}
+	return 1;
 }
 int valid_cmd(char *s){
+	if(*s == '\t' && *(s+1)!='\t' && *(s+1)!='\n' && *(s+1)!=' '){
+		return 1;
+	}
 	return 0;
 }
 
@@ -191,3 +199,5 @@ char* double_buff(char* buff, int cursize){
 	}
 	return buff_double;
 }
+
+
