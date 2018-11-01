@@ -211,7 +211,3 @@ void build_dependency_graph(graph_node_list* gnl){
     }
 }
 
-
-int main(){
-    return 1;
-}
