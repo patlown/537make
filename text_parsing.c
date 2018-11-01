@@ -233,10 +233,11 @@ void printt(target* t){
 		target *tar = t;
 		printf("%s\n",tar->name);
 		list_node *ptr = tar->dependencies;
-
+		int i = 1;
 		while(ptr!=NULL){
-			printf("%s ",ptr->val);
+			printf("Dependency %d: %s ",i,ptr->val);
 			ptr = ptr->next;
+			i++;
 		}
 		printf("\n");
 		list_node *ptr1 = tar->cmds;

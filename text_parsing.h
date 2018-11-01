@@ -1,5 +1,5 @@
-#ifndef TEXT_PARSING
-#define TEXT_PARSING
+#ifndef TEXT_PARSING_H
+#define TEXT_PARSING_H
 
 #include <stdio.h>
 #include <stdlib.h>
