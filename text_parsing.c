@@ -11,6 +11,8 @@ int *c;
 extern const int buffer_limit;
 extern const int buffer_init;
 
+void printt(target *t);
+
 /*TODO:
 make sure target_node->next is pointing to NULL if it isn't pointing to another target node.
 I rely on that when traversing the target_nodes while building the graph.
@@ -20,15 +22,12 @@ Also make sure the ends of the dependency and cmds list_nodes have a NULL next, 
 
 //TODO: can you briefly comment all the loops so we can see things at a higher level when reviewing the code.
 
-/*
-TODO: I added a field to the dependencies and commands, if we can keep count of the size of their lists, I can more efficiently allocate graph node
-		children when building the graph.  Should be an easy enough addition.
-*/
 
 target_node* parseFile(char * filename){
-	num_targets = 0;
 	FILE *fp;
+	c = malloc(sizeof(int));
 	target_node *dummy = malloc(sizeof(target_node));
+	
 	target_node *node_ptr = dummy;
 
 	fp = fopen(filename, "r");
@@ -37,23 +36,31 @@ target_node* parseFile(char * filename){
 		return NULL;
 	}
 	*c = fgetc(fp);
+
+
+
+	
+	
 	while(1){
 		skip_empty(c,fp);
 		if(*c == EOF){
 			break;
 		}
 		target *tempt=get_target(c,fp);
+		//printt(tempt);
 		if(!tempt){
 			//print error 
 			return NULL;
 		}
-		target_node *temptarget = malloc(sizeof(target_node));
-		temptarget->t = tempt;
-		node_ptr->next = temptarget;
+		target_node *tempnode = malloc(sizeof(target_node));
+		tempnode->t = tempt;
+		node_ptr->next = tempnode;
 		node_ptr = node_ptr->next;
 	}
-
+	node_ptr->next = NULL;
 	return dummy->next;
+
+	
 }
 
 
@@ -68,6 +75,7 @@ target* get_target(int *c, FILE* fp){
 	char *s = line, *p = line;
 	if(!valid_target(s)){
 		//invalid target
+		fprintf(stderr, "Invalid Target!\n");
 		return NULL;
 	}	
 
@@ -77,20 +85,32 @@ target* get_target(int *c, FILE* fp){
 	}
 	if(*p == '\n'){
 		//return incorrectly formatted line no :
+		fprintf(stderr, "incorrectly formatted line no :\n");
 		return NULL;
 	}
+	
 	*p = '\0';
 	t->name = s;
-
-	while(1){
-		while(*p == ' ') p++;
+	//printf("%c\n",*p);
+	
+	int endofline = 0;
+	while(!endofline){
 		if(*p == '\n') break;
+		p++;
+		while(*p == ' '){p++;}
 		s = p;
-		while(*p!=' ' && *p!='\n') p++;
+		while(*p!=' ' && *p!='\n'){ p++;}
 		if(*p ==' '){
 			*p = '\0';
 		}
+		else{
+			*p = '\0';
+			endofline = 1;
+			//printf("check\n");
+		}
+		
 		list_node *tempnode = malloc(sizeof(list_node));
+		//tempnode->next = NULL;
 		tempnode->val = s;
 		nodeptr->next = tempnode;
 		nodeptr = nodeptr->next;
@@ -104,6 +124,7 @@ target* get_target(int *c, FILE* fp){
 		}
 		s = line;
 		if(!valid_cmd(s)){
+			fprintf(stderr, "Invalid Cmd!\n");
 			return NULL;
 		}
 		list_node *tempnode = malloc(sizeof(list_node));
@@ -112,9 +133,11 @@ target* get_target(int *c, FILE* fp){
 		cmdptr = cmdptr->next;
 
 	}
+	nodeptr->next = NULL;
+	cmdptr->next = NULL;
 	t->dependencies = t->dependencies->next;
 	t->cmds = t->cmds->next;
-	num_targets++;
+	//num_targets++;
 	return t;
 }
 
@@ -138,7 +161,7 @@ int valid_cmd(char *s){
 
 */
 void skip_empty(int* c,FILE* fp){
-	while(*c == '\n' || *c != EOF){
+	while(*c == '\n' && *c != EOF){
 		*c = fgetc(fp);
 	}
 }
@@ -204,4 +227,57 @@ char* double_buff(char* buff, int cursize){
 	return buff_double;
 }
 
+void printt(target* t){
+	
+
+		target *tar = t;
+		printf("%s\n",tar->name);
+		list_node *ptr = tar->dependencies;
+
+		while(ptr!=NULL){
+			printf("%s ",ptr->val);
+			ptr = ptr->next;
+		}
+		printf("\n");
+		list_node *ptr1 = tar->cmds;
+		while(ptr1!=NULL){
+			printf("%s",ptr1->val);
+			ptr1 = ptr1->next;
+		}
+
+}
+
+
+
+int main(int argc, char** argv){
+	target_node *t = parseFile(argv[1]);
+    target_node *ptr = t;
+	while(ptr!=NULL){
+		printt(ptr->t);
+		ptr = ptr->next;
+	}
+	// FILE *f = fopen(argv[1],"read");
+	// int *c = malloc(sizeof(int));
+	// *c = fgetc(f);
+	// printf("%s",read_line(c,f));
+	// skip_empty(c,f);
+	// target *tar = get_target(c,f);
+	// printt(tar);
+	// printf("%s\n",tar->name);
+	// list_node *ptr = tar->dependencies;
+
+	// while(ptr!=NULL){
+	// 	printf("%s ",ptr->val);
+	// 	ptr = ptr->next;
+	// }
+	// list_node *ptr1 = tar->cmds;
+	// while(ptr1!=NULL){
+	// 	printf("%s ",ptr1->val);
+	// 	ptr1 = ptr1->next;
+	// }
+	
+	//target_node *root =parseFile(argv[1]);
+	//print(root);
+	
+}
 
