@@ -10,6 +10,7 @@ int line_count;
 int *c;
 extern const int buffer_limit;
 extern const int buffer_init;
+int line = 0;
 
 void printt(target *t);
 
@@ -75,7 +76,8 @@ target* get_target(int *c, FILE* fp){
 	char *s = line, *p = line;
 	if(!valid_target(s)){
 		//invalid target
-		fprintf(stderr, "Invalid Target!\n");
+		fprintf(stderr, "Invalid Target!\n Line:%d %s");
+
 		return NULL;
 	}	
 
@@ -163,6 +165,7 @@ int valid_cmd(char *s){
 void skip_empty(int* c,FILE* fp){
 	while(*c == '\n' && *c != EOF){
 		*c = fgetc(fp);
+		line++;
 	}
 }
 
@@ -206,6 +209,7 @@ char* read_line(int* c, FILE* fp){
 			}
 	}
 	buff[index] = '\n';
+	line++;
 	*c = fgetc(fp);
 	return buff;
 }
