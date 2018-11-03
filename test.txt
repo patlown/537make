@@ -1,4 +1,5 @@
-537ps:  537ps.o readproc.o parseopts.o output.o
+
+537ps:  537ps.o readproc.o parseopts.o 	output.o
 	gcc -o 537ps 537ps.o readproc.o parseopts.o output.o
 	echo built successfully....
 
@@ -13,3 +14,6 @@ parseopts.o: parseopts.c parseopts.h
 
 output.o: output.c
 	gcc -c -Wall -Wextra output.c
+
+clean:
+	rm -f *.o

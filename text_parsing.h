@@ -5,10 +5,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-const int buffer_limit = 1024;
-const int buffer_init = 64;
+static int const buffer_limit = 1024;
+static int const buffer_init = 64;
 
-int num_targets;
+//int num_targets;
 
 typedef struct list_node list_node;
 typedef struct target target;
