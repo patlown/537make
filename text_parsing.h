@@ -33,6 +33,14 @@ struct target_node{
 	struct target_node* next;
 };
 
+target_node* parseFile(char * filename);
+char* double_buff(char* buff, int cursize);
+void skip_empty(int* c,FILE* fp);
+char* read_line(int* c, FILE* fp);
+target* get_target(int *c, FILE* fp);
+int valid_cmd(char* s);
+int valid_target(char* s);
+void printt(target *t);
 
 
 

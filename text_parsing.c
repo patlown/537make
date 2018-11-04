@@ -1,17 +1,12 @@
 #include "text_parsing.h"
 
-char* double_buff(char* buff, int cursize);
-void skip_empty(int* c,FILE* fp);
-char* read_line(int* c, FILE* fp);
-target* get_target(int *c, FILE* fp);
-int valid_cmd(char* s);
-int valid_target(char* s);
+
 int line_count;
 int *c;
 //extern const int buffer_limit;
 //extern const int buffer_init;
 
-void printt(target *t);
+
 
 /*TODO:
 make sure target_node->next is pointing to NULL if it isn't pointing to another target node.
@@ -48,6 +43,7 @@ target_node* parseFile(char * filename){
 			break;
 		}
 		target *tempt=get_target(c,fp);
+		if(!tempt) return NULL;
 		//printt(tempt);
 		if(!tempt){
 			//print error 
@@ -76,6 +72,7 @@ target* get_target(int *c, FILE* fp){
 	list_node *cmdptr = t->cmds;
 	
 	char* line = read_line(c,fp);
+	if(!line) return NULL;
 	line_count++;
 	char *s = line, *p = line;
 	
@@ -129,9 +126,7 @@ target* get_target(int *c, FILE* fp){
 	while(*c =='\t'){
 		line = read_line(c,fp);
 		line_count++;
-		if(line == NULL){
-			break;
-		}
+		if(!line)return NULL;
 		s = line;
 		if(!valid_cmd(s)){
 			fprintf(stderr, "Invalid Cmd!\nLine No:%d\n%s",line_count,line);
@@ -238,7 +233,7 @@ char* double_buff(char* buff, int cursize){
 	for(int i = 0; i < cursize; i++){
 		buff_double[i] = buff[i];
 	}
-	free(buff);
+	//free(buff);
 	return buff_double;
 }
 
@@ -267,39 +262,39 @@ void printt(target* t){
 
 
 
-int main(int argc, char** argv){
-	target_node *t = parseFile(argv[1]);
-    target_node *ptr = t;
-	while(ptr!=NULL){
-		printt(ptr->t);
-		ptr = ptr->next;
-	}
+// int main(int argc, char** argv){
+// 	target_node *t = parseFile(argv[1]);
+//     target_node *ptr = t;
+// 	while(ptr!=NULL){
+// 		printt(ptr->t);
+// 		ptr = ptr->next;
+// 	}
 
 
 
 
-	// FILE *f = fopen(argv[1],"read");
-	// int *c = malloc(sizeof(int));
-	// *c = fgetc(f);
-	// printf("%s",read_line(c,f));
-	// skip_empty(c,f);
-	// target *tar = get_target(c,f);
-	// printt(tar);
-	// printf("%s\n",tar->name);
-	// list_node *ptr = tar->dependencies;
+// 	// FILE *f = fopen(argv[1],"read");
+// 	// int *c = malloc(sizeof(int));
+// 	// *c = fgetc(f);
+// 	// printf("%s",read_line(c,f));
+// 	// skip_empty(c,f);
+// 	// target *tar = get_target(c,f);
+// 	// printt(tar);
+// 	// printf("%s\n",tar->name);
+// 	// list_node *ptr = tar->dependencies;
 
-	// while(ptr!=NULL){
-	// 	printf("%s ",ptr->val);
-	// 	ptr = ptr->next;
-	// }
-	// list_node *ptr1 = tar->cmds;
-	// while(ptr1!=NULL){
-	// 	printf("%s ",ptr1->val);
-	// 	ptr1 = ptr1->next;
-	// }
+// 	// while(ptr!=NULL){
+// 	// 	printf("%s ",ptr->val);
+// 	// 	ptr = ptr->next;
+// 	// }
+// 	// list_node *ptr1 = tar->cmds;
+// 	// while(ptr1!=NULL){
+// 	// 	printf("%s ",ptr1->val);
+// 	// 	ptr1 = ptr1->next;
+// 	// }
 	
-	//target_node *root =parseFile(argv[1]);
-	//print(root);
+// 	//target_node *root =parseFile(argv[1]);
+// 	//print(root);
 	
-}
+// }
 

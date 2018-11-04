@@ -24,14 +24,21 @@ struct graph_node_list{
 	graph_node_list* next;
 };
 
-//this holds info on the size of the graph_node_list
-int gnl_size = 0;
+
 
 //hold pointers to start and end of list
 graph_node_list* start;
 graph_node_list* end;
 
-
+graph_node* create_target_graph_node(target_node* curr_target_node);
+graph_node* create_non_target_graph_node(list_node* curr_dep);
+graph_node_list* create_graph_node_list();
+void add_graph_node(graph_node* gn);
+int exists_in_graph_node_list(graph_node_list* gnl, char* name);
+graph_node_list* build_graph_node_list(target_node* curr_target_node);
+graph_node** alloc_graph_node_children(int size);
+graph_node* get_graph_node(graph_node_list* gnl, char* name);
+void build_dependency_graph(graph_node_list* gnl);
 
 
 

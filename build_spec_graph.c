@@ -1,7 +1,10 @@
 #include "build_spec_graph.h"
 extern graph_node_list* start;
 extern graph_node_list* end;
-extern int gnl_size;
+
+//this holds info on the size of the graph_node_list
+int gnl_size = 0;
+
 
 /*
 This function will create a graph node that has a non-NULL target_node pointer, this means this graph_node is a target and will have dependencies
@@ -37,6 +40,7 @@ node.  Use start and end to check if they are equal to each other.  If start has
 graph_node_list* create_graph_node_list(){
     graph_node_list* new = malloc(sizeof(graph_node_list));
     new->name = NULL;
+    new->next = NULL;
     start = new;
     end = new;
     return new;
@@ -52,6 +56,7 @@ void add_graph_node(graph_node* gn){
         start->name = gn->name;
         start->addr = gn;
         start->next = NULL;
+        return;
         /*
         Don't add a next to it, we now have start and end pointing to the beginning node, once we 
         add nodes from here on out, we will create a new graph_node_list node and make ends next equal to it;
@@ -126,21 +131,27 @@ graph_node_list* build_graph_node_list(target_node* curr_target_node){
 
     //curr_gnle :: curr_(g)raph_(n)ode_(l)ist_(e)lement, use this to iterate the list so that gnl is always pointing to the beginning of the list.
     graph_node_list* curr_gnle = gnl;
-    while(curr_gnle != NULL){
+    while(curr_gnle != NULL && curr_gnle->addr->gnt != NULL){
         //isolate the target we are looking at
         target* curr_target = curr_gnle->addr->gnt;
 
         //isolate the list of dependencies for that target
         list_node* curr_dep = curr_target->dependencies;
+        
+        
 
         while(curr_dep != NULL){
             //if the current dependency we are examining does not exist in the gnl, create a new graph node and add it
+            
             if(!exists_in_graph_node_list(gnl,curr_dep->val)){
                 add_graph_node(create_non_target_graph_node(curr_dep));
             }
             curr_dep = curr_dep->next;
         }
+
+        curr_gnle = curr_gnle->next;
     }
+    build_dependency_graph(gnl);
     return gnl;
 }
 
@@ -205,6 +216,8 @@ void build_dependency_graph(graph_node_list* gnl){
             int i = 0;
             while(curr_dep != NULL){
                 curr_graph_node->children[i] = get_graph_node(gnl,curr_dep->val);
+                curr_dep = curr_dep->next;
+                i++;
             }
         }
         curr_gnle = curr_gnle->next;
