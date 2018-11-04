@@ -7,14 +7,15 @@ current node
 */
 void makeTargets(char* name, graph_node_list* gnl){
     graph_node* curr_graph_node = NULL;
+    graph_node_list* curr_gnle = gnl;
 
     //find the addr of the node we need to build
-    while(gnl != NULL){
+    while(curr_gnle != NULL){
         //check for matching name
-        if(strcmp(gnl->name,name) == 0){
+        if(strcmp(curr_gnle->name,name) == 0){
             //check that it is a target, ie, the matching node contains a target node
-            if(gnl->addr->gnt != NULL){
-                curr_graph_node = gnl->addr;
+            if(curr_gnle->addr->gnt != NULL){
+                curr_graph_node = curr_gnle->addr;
                 //once we've met these conditions, we break
                 break;
             }  
@@ -27,17 +28,26 @@ void makeTargets(char* name, graph_node_list* gnl){
     }
 
 
+
+
 }
 
-void runCommands(graph_node* node){
+void dfs(graph_node* node){
     //check if nodes have children, for each child, recurse
     if(node->gnt->deps_size > 0){
         for(int i = 0; i < deps_size; i++){
-            runCommands(node->children[i]);
+            dfs(node->children[i]);
         }
+
     }else{
-        
+        runCommands(node);
     }
 
 
 }
+
+runCommands(graph_node* node){
+
+}
+
+
