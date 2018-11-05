@@ -1,5 +1,5 @@
 
-537ps:  537ps.o readproc.o parseopts.o 	output.o
+537ps:  537ps.o readproc.o parseopts.o output.o
 	gcc -o 537ps 537ps.o readproc.o parseopts.o output.o
 	echo built successfully....
 

@@ -84,6 +84,10 @@ target* get_target(int *c, FILE* fp){
 		return NULL;
 	}	
 	while(*p != '\n' && *p != ':'){
+		if(*p==' ' || *p=='\t'){
+			fprintf(stderr, "Invalid Target!\nLine No:%d\n%s",line_count,line);
+			return NULL;
+		}
 		p++;
 	}
 	if(*p == '\n'){
@@ -100,11 +104,11 @@ target* get_target(int *c, FILE* fp){
 		
 		p++;
 		
-		while(*p == ' '){p++;}
+		while(*p == ' ' || *p == '\t'){p++;}
 		if(*p == '\n') break;
 		s = p;
-		while(*p!=' ' && *p!='\n'){ p++;}
-		if(*p ==' '){
+		while(*p!=' ' && *p!='\n' && *p!='\t'){ p++;}
+		if(*p ==' ' || *p == '\t'){
 			*p = '\0';
 		}
 		else{

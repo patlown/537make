@@ -7,6 +7,7 @@ typedef struct graph_node graph_node;
 typedef struct graph_node_list graph_node_list;
 
 
+
 /* This structure will point to target_node for its data and will graph_nodes as its children
 */
 struct graph_node{
@@ -26,6 +27,7 @@ struct graph_node_list{
 
 
 
+
 //hold pointers to start and end of list
 graph_node_list* start;
 graph_node_list* end;
@@ -39,6 +41,8 @@ graph_node_list* build_graph_node_list(target_node* curr_target_node);
 graph_node** alloc_graph_node_children(int size);
 graph_node* get_graph_node(graph_node_list* gnl, char* name);
 void build_dependency_graph(graph_node_list* gnl);
+int is_DAG(graph_node* gnode,char* name);
+int check_no_cycle(graph_node_list* gnl);
 
 
 

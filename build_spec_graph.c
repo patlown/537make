@@ -1,7 +1,8 @@
 #include "build_spec_graph.h"
 extern graph_node_list* start;
 extern graph_node_list* end;
-
+graph_node_list* check_list;
+int check;
 //this holds info on the size of the graph_node_list
 int gnl_size = 0;
 
@@ -152,6 +153,10 @@ graph_node_list* build_graph_node_list(target_node* curr_target_node){
         curr_gnle = curr_gnle->next;
     }
     build_dependency_graph(gnl);
+    if(!check_no_cycle(gnl)){
+        //fprintf(stderr,"Cycle detected!");
+        return NULL;
+    }
     return gnl;
 }
 
@@ -224,3 +229,50 @@ void build_dependency_graph(graph_node_list* gnl){
     }
 }
 
+int check_no_cycle(graph_node_list* gnl){
+    graph_node_list *ptr_gnl = gnl; 
+    while(ptr_gnl){
+        check_list = calloc(1,sizeof(graph_node_list));
+        check_list->name = NULL;
+        check_list->next = NULL;
+        check = 0;
+        if(!is_DAG(ptr_gnl->addr,ptr_gnl->name)){
+            return 0;
+        }
+        free(check_list);
+        ptr_gnl = ptr_gnl->next;
+    }
+    return 1;
+}
+
+
+int is_DAG(graph_node* gnode,char* name){
+    if(strcmp(gnode->name,name)==0){
+        if(!check){
+            check = 1;
+        }
+        else{
+            fprintf(stderr,"The element %s is duplicated!!\n",gnode->name);
+            return 0;
+        }
+    }
+    if(!exists_in_graph_node_list(check_list->next,gnode->name)){
+        //add to the check list
+        graph_node_list* new_gnl_node = malloc(sizeof(graph_node_list));
+        new_gnl_node->name = gnode->name;
+        new_gnl_node->addr = gnode;
+        new_gnl_node->next = check_list->next;
+        check_list->next = new_gnl_node;
+    }
+    
+    //recursive on each children
+    if(gnode->gnt && gnode->gnt->deps_size){
+        for(int i = 0; i < gnode->gnt->deps_size;i++){
+            if(!is_DAG(gnode->children[i],name)){
+                return 0;
+            } 
+        }
+    }
+
+    return 1;
+}
