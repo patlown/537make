@@ -36,19 +36,31 @@ current node
 
 
 
-// void dfs(graph_node* node){
-//     //check if nodes have children, for each child, recurse
-//     if(node->gnt->deps_size > 0){
-//         for(int i = 0; i < deps_size; i++){
-//             dfs(node->children[i]);
-//         }
-
-//     }else{
-//         runCommands(node);
-//     }
-
-
-// }
+void dfs(graph_node* node){
+    //check if nodes have children, for each child, recurse
+    if(node->gnt != NULL && node->gnt->deps_size > 0){
+        for(int i = 0; i < deps_size; i++){
+            dfs(node->children[i]);
+        }
+        //check for existence of file
+        time_t parent_time = check_file_exists(node->gnt->name);
+        if(parent_time != 0){
+            for(int i = 0; i<deps_size; i++){
+                time_t child_time = check_file_exists(node->children[i]->gnt->name);
+                if(child_time != 0){
+                    if(child_time > parent_time){
+                        runCommands(node);
+                        break;
+                    }
+                }
+            }
+        }else{
+        runCommands(node);
+        }
+    }else{
+        runCommands(node);
+    }
+}
 
 
 #include <stdio.h>
@@ -116,10 +128,48 @@ void parseCmds(char *line, char** argv){
         
     }
     *argv = NULL;
-    
-    
+}
+char* make_file_path(char* filename){
+    char * app = "./";
+    char * path;
+    if((path = malloc(strlen(app)+strlen(filename)+1)) != NULL){
+        path[0] = '\0';   // strcat operates on '\0' so make sure that is first letter of empty string
+        strcat(path,app);
+        strcat(path,filename);
+    } else {
+        fprintf(STDERR,"malloc failed!\n");
+    }
+}
+#include <time.h>
+#include <sys/stat.h>
+/*returns last modified time if file does exist, else returns 0*/
+time_t check_file_exists(char *filename){
+    DIR *d;
+    struct dirent *cd;
+
+    d = opendir ("./");
+    if (d != NULL)
+    {
+        while (cd = readdir (d)){
+            if(strcmp(cd->d_name,filename) == 0){
+                //found the file we are looking for
+                struct stat attr;
+                char * path = make_file_path(filename);
+                stat(path,&attr);
+                closedir(d);
+                return attr.st_mtime;
+            }
+        }
+        closedir(d);
+    }
+    else{
+        fprintf (stderr,"Couldn't open the directory");
+    }
+    return 0;
 }
 
+#include <dirent.h>
+#include <string.h>
 int main(){
     char line[1024] = "gcc -c -Wall -Wextra readproc.c\n";
     char  *argv[64]; 
@@ -130,6 +180,7 @@ int main(){
         printf("%s\n",argv[i++]);
     }
     execute_curr(argv);
+    
     
 
 }
