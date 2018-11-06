@@ -24,19 +24,17 @@ void makeTargets(char* name, graph_node_list* gnl){
     //if curr_graph_node stays null, then we never found the target in our graph_node_list
     if(curr_graph_node == NULL){
         fprintf(stderr,"%s is not a valid target in this makefile",name);
-        return;
+        exit(1);
     }
-
+    //execute all commands of target recursively bottom up
     dfs(curr_graph_node);
-
-
-
-
-
 }
 
 
-
+/*
+This function is given a graph node and recursively executes all its commands.  If target in graph node doesn't exist or is older than its dependency,
+it is recompiled.  If target does exist and is not older than its dependencies, it is not recompiled
+*/
 void dfs(graph_node* node){
     //check if nodes have children, for each child, recurse
     if(node->gnt != NULL && node->gnt->deps_size > 0){
@@ -67,38 +65,25 @@ void dfs(graph_node* node){
 }
 
 
-
-void execute_curr(char **argv){
+/*
+This function handles fork and exec functions to run commands.  It expects to get correctly formatted program arguments
+will print to stderr if a fork failed or executing commands failed.
+This function takes inspiration from http://www.csl.mtu.edu/cs4411.ck/www/NOTES/process/fork/exec.html
+*/
+void execute_curr(char* arg_line,char **argv){
     pid_t pid;
     int status;
-
-    // if((pid = fork())<0){
-    //     fprintf(stderr,"failed to fork child process");
-
-    //     return;
-    // }
-    // else if(pid == 0){
-    //     printf("running as child");
-    //     if(execvp(*argv,argv)<0){
-    //         fprintf(stderr,"failed to execute the commands");
-    //     }
-    // }else{
-    //     printf("waiting as parent");
-    //     while(wait(&status) != pid){
-    //         ;
-    //     }
-    // }
 
     pid = fork();
     printf("%d\n",pid);
     if(pid < 0){
-        perror("fail fork\n");
-        return;
+        fprintf(stderr,"Fork failed while processing line: %s",arg_line);
+        exit(1);
     }
     if(pid == 0){
         execvp(*argv,argv);
-        printf("failed to execute the commands");
-        return;
+        fprintf(stderr,"Failed to excute command: %s",arg_line);
+        exit(1);
     }
     pid_t wait_result;
 
@@ -106,26 +91,34 @@ void execute_curr(char **argv){
     {
         printf("Process %lu returned result: %d\n", (unsigned long) wait_result, status);
     }
-
-    printf("Child has finished.\n");
-
     return;
 }
-
+/*
+This higher level function is given a graph node, checks if it contains a target, and if it does, runs the all the commands of the target
+by calling parseCmds and execute_curr functions.
+Does nothing if graph node isn't a target
+*/
 void runCommands(graph_node* node){
     if(node->gnt == NULL){
         return; 
     }
     list_node* curr_cmd = node->gnt->cmds;
-    char* argv[512];
+    char* argv[arg_limit];
     for(int i = 0; i< node->gnt->cmds_size; i++){
         parseCmds(curr_cmd->val,argv);
-        execute_curr(argv);
+        execute_curr(curr_cmd->val,argv);
         curr_cmd = curr_cmd->next;
     }
     return;
 }
-
+/*
+This functions takes in a valid command line and parses it into
+an argument array that can be passed in as command line arguments to a function
+ex:
+"gcc -o <filename>" -> {"gcc","-o","<filename>",NULL}
+As long as argv size = buffer size, this functions correctly
+This function takes inspiration from http://www.csl.mtu.edu/cs4411.ck/www/NOTES/process/fork/exec.html
+*/
 void parseCmds(char *line, char** argv){
     char* ptr = line;
     int endofline = 0;
@@ -140,11 +133,9 @@ void parseCmds(char *line, char** argv){
             }
             *ptr++ = '\0';
         }
-        //*argv = ptr;
         argv[index] = ptr;
         
         if(*ptr != '\0'){
-            //*argv++;
             index++;
         }
         while(*ptr != '\0' && *ptr != ' ' && *ptr != '\n' && *ptr != '\t'){
@@ -152,9 +143,12 @@ void parseCmds(char *line, char** argv){
         }
         
     }
-    //*argv = NULL;
     argv[index] = NULL;
 }
+/*
+This function is given a filename in the current directory and appends a "./" to it.
+The resulting return is "./<filename>"
+*/
 char* make_file_path(char* filename){
     char * app = "./";
     char * path;
@@ -162,9 +156,9 @@ char* make_file_path(char* filename){
         path[0] = '\0';   // strcat operates on '\0' so make sure that is first letter of empty string
         strcat(path,app);
         strcat(path,filename);
-        printf("filePath: %s\n",path);
     } else {
-        fprintf(stderr,"malloc failed!\n");
+        fprintf(stderr,"Malloc failed to allocate space to store filepath './%s'",filename);
+        exit(1);
     }
     return path;
 }
@@ -173,16 +167,19 @@ char* make_file_path(char* filename){
 time_t check_file_exists(char *filename){
     DIR *d;
     struct dirent *cd;
-
+    //opens the  directory
     d = opendir("./");
     if (d != NULL)
     {
+        //checks for file in directory
         while ((cd = readdir(d))){
             if(strcmp(cd->d_name,filename) == 0){
                 //found the file we are looking for
                 struct stat attr;
                 char * path = make_file_path(filename);
                 stat(path,&attr);
+                //we are done with path, free it
+                free(path);
                 closedir(d);
                 return attr.st_mtime;
             }
@@ -190,7 +187,8 @@ time_t check_file_exists(char *filename){
         closedir(d);
     }
     else{
-        fprintf (stderr,"Couldn't open the directory");
+        fprintf (stderr,"Couldn't open the current directory");
+        exit(1);
     }
     return 0;
 }
