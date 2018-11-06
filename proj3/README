@@ -1,5 +1,0 @@
-simple_testcase: A test case with a valid, but exotic makefile.
-
-basic_cycle_testcase: A testcase with a direct cycle in the graph.
-
-advanced_cycle_testcase: A testcase with a more indirect cycle.

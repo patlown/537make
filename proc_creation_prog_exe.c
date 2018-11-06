@@ -45,9 +45,11 @@ void dfs(graph_node* node){
         }
         //check for existence of file
         time_t parent_time = check_file_exists(node->gnt->name);
+        printf("time of this file: %ld\n",parent_time);
         if(parent_time != 0){
             for(int i = 0; i< node->gnt->deps_size; i++){
-                time_t child_time = check_file_exists(node->children[i]->gnt->name);
+                time_t child_time = check_file_exists(node->children[i]->name);
+                printf("time of this file: %ld\n",child_time);
                 if(child_time != 0){
                     if(child_time > parent_time){
                         runCommands(node);
@@ -160,6 +162,7 @@ char* make_file_path(char* filename){
         path[0] = '\0';   // strcat operates on '\0' so make sure that is first letter of empty string
         strcat(path,app);
         strcat(path,filename);
+        printf("filePath: %s\n",path);
     } else {
         fprintf(stderr,"malloc failed!\n");
     }

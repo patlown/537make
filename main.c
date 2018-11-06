@@ -6,20 +6,29 @@ int main(int argc, char** argv){
 	
 	char make_file[] = "makefile";
 	target_node *t = parseFile(make_file);
-    //target_node *ptrt = t;
+	if(!t){
+		return -1;
+	}else {
+		printf("parser completed!!\n");
+	}
+    // target_node *ptrt = t;
 	// while(ptrt!=NULL){
 	// 	printt(ptrt->t);
 	// 	ptrt = ptrt->next;
 
 	// }
 	graph_node_list *list = build_graph_node_list(t);
-	if(argc == 1){
-		makeTargets(list->name,list);
-	}else if(argc == 2){
-		makeTargets(argv[1],list);
-	}else{
-		fprintf(stderr,"error\n");
+	if(!list){
+		return -1;
+	}else {
+		printf("graph completed!!\n");
 	}
+	//graph_node_list *list_ptr = list;
+	// while(list_ptr!=NULL){
+	// 	printf("%s\n",list_ptr->name);
+	// 	list_ptr = list_ptr->next;
+	// }
+	
 	
 	// while(ptrlist!=NULL){
 	// 	printf("%s\n",ptrlist->name);
@@ -35,5 +44,14 @@ int main(int argc, char** argv){
 	// 	}
 	// 	curr_gnle = curr_gnle->next;
 	// }
+
+	if(argc == 1){
+		makeTargets(list->name,list);
+	}else if(argc == 2){
+		makeTargets(argv[1],list);
+	}else{
+		fprintf(stderr,"error\n");
+	}
+
 	return 0;
 }

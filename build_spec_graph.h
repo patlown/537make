@@ -41,7 +41,7 @@ graph_node_list* build_graph_node_list(target_node* curr_target_node);
 graph_node** alloc_graph_node_children(int size);
 graph_node* get_graph_node(graph_node_list* gnl, char* name);
 void build_dependency_graph(graph_node_list* gnl);
-int is_DAG(graph_node* gnode,char* name);
+int is_DAG(graph_node* gnode);
 int check_no_cycle(graph_node_list* gnl);
 
 
