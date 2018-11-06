@@ -77,19 +77,22 @@ void execute_curr(char* arg_line,char **argv){
     pid = fork();
     printf("%d\n",pid);
     if(pid < 0){
-        fprintf(stderr,"Fork failed while processing line: %s",arg_line);
+        fprintf(stderr,"Fork failed while processing line: %s\n",arg_line);
         exit(1);
     }
     if(pid == 0){
         execvp(*argv,argv);
-        fprintf(stderr,"Failed to excute command: %s",arg_line);
+        fprintf(stderr,"Failed to excute command: %s\n",arg_line);
         exit(1);
     }
     pid_t wait_result;
 
     while ((wait_result = wait(&status)) != -1)
     {
-        printf("Process %lu returned result: %d\n", (unsigned long) wait_result, status);
+	if(status == 256){
+		fprintf(stderr,"Failed to execute command: %s\n",arg_line);
+		exit(1);
+	}
     }
     return;
 }

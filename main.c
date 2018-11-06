@@ -4,7 +4,7 @@
 
 int main(int argc, char** argv){
 	
-	char make_file[] = "makefile";
+	char make_file[] = "test.txt";
 	target_node *t = parseFile(make_file);
 	if(!t){
 		return -1;
