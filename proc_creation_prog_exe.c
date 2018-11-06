@@ -19,6 +19,7 @@ void makeTargets(char* name, graph_node_list* gnl){
                 break;
             }  
         }
+        curr_gnle = curr_gnle->next;
     }
     //if curr_graph_node stays null, then we never found the target in our graph_node_list
     if(curr_graph_node == NULL){
@@ -69,22 +70,44 @@ void execute_curr(char **argv){
     pid_t pid;
     int status;
 
-    if((pid = fork())<0){
-        fprintf(stderr,"failed to fork child process");
+    // if((pid = fork())<0){
+    //     fprintf(stderr,"failed to fork child process");
 
+    //     return;
+    // }
+    // else if(pid == 0){
+    //     printf("running as child");
+    //     if(execvp(*argv,argv)<0){
+    //         fprintf(stderr,"failed to execute the commands");
+    //     }
+    // }else{
+    //     printf("waiting as parent");
+    //     while(wait(&status) != pid){
+    //         ;
+    //     }
+    // }
+
+    pid = fork();
+    printf("%d\n",pid);
+    if(pid < 0){
+        perror("fail fork\n");
         return;
     }
-    else if(pid == 0){
-        printf("running as child");
-        if(execvp(*argv,argv)<0){
-            fprintf(stderr,"failed to execute the commands");
-        }
-    }else{
-        printf("waiting as parent");
-        while(wait(&status) != pid){
-            continue;
-        }
+    if(pid == 0){
+        execvp(*argv,argv);
+        printf("failed to execute the commands");
+        return;
     }
+    pid_t wait_result;
+
+    while ((wait_result = wait(&status)) != -1)
+    {
+        printf("Process %lu returned result: %d\n", (unsigned long) wait_result, status);
+    }
+
+    printf("Child has finished.\n");
+
+    return;
 }
 
 void runCommands(graph_node* node){
@@ -104,6 +127,7 @@ void runCommands(graph_node* node){
 void parseCmds(char *line, char** argv){
     char* ptr = line;
     int endofline = 0;
+    int index = 0;
     while(!endofline)
     {
         while(*ptr == ' ' || *ptr == '\t' || *ptr == '\n'){
@@ -114,18 +138,20 @@ void parseCmds(char *line, char** argv){
             }
             *ptr++ = '\0';
         }
-
-        *argv = ptr;
+        //*argv = ptr;
+        argv[index] = ptr;
         
         if(*ptr != '\0'){
-            *argv++;
+            //*argv++;
+            index++;
         }
         while(*ptr != '\0' && *ptr != ' ' && *ptr != '\n' && *ptr != '\t'){
             ptr++;
         }
         
     }
-    *argv = NULL;
+    //*argv = NULL;
+    argv[index] = NULL;
 }
 char* make_file_path(char* filename){
     char * app = "./";
@@ -137,6 +163,7 @@ char* make_file_path(char* filename){
     } else {
         fprintf(stderr,"malloc failed!\n");
     }
+    return path;
 }
 
 /*returns last modified time if file does exist, else returns 0*/
@@ -147,7 +174,7 @@ time_t check_file_exists(char *filename){
     d = opendir("./");
     if (d != NULL)
     {
-        while (cd = readdir(d)){
+        while ((cd = readdir(d))){
             if(strcmp(cd->d_name,filename) == 0){
                 //found the file we are looking for
                 struct stat attr;
@@ -166,38 +193,46 @@ time_t check_file_exists(char *filename){
 }
 
 
-int main(){
-    // char line[1024] = "gcc -c -Wall -Wextra readproc.c\n";
-    // char  *argv[64]; 
-    // parseCmds(line,argv);
+// int main(){
+//     // char line[1024] = "gcc -c -Wall -Wextra readproc.c\n";
+//     // char  *argv[64]; 
+//     // parseCmds(line,argv);
     
-    // int i = 0;
-    // while(argv[i] != NULL){
-    //     printf("%s\n",argv[i++]);
-    // }
-    // execute_curr(argv);
+//     // int i = 0;
+//     // while(argv[i] != NULL){
+//     //     printf("%s\n",argv[i++]);
+//     // }
+//     // execute_curr(argv);
 
-    char* filename = "test.txt";
-    char* filename2 = "readproc.c";
-    time_t x = check_file_exists(filename);
-    printf("%d\n", (int)x);
+//     // char* filename = "test.txt";
+//     // //char* filename2 = "readproc.c";
+//     // time_t x = check_file_exists(filename);
+//     // printf("%d\n", (int)x);
 
-    char file[15] = "text_parsing.o";
-    char line[60] = "gcc -c -Wall -Wextra text_parsing.c\n";
-    target* test = malloc(sizeof(target));
-    list_node* testcmds = malloc(sizeof(list_node));
-    testcmds->val = line;
-    testcmds->next = NULL;
-    test->cmds = testcmds;
-    test->cmds_size = 1;
-    test->deps_size = 0;
-    test->dependencies = NULL;
-    test->name = file;
+//     char file[15] = "text_parsing.o";
+//     char line[1024] = "	make clean\n";
+//     // char  *argv[64]; 
+//     // parseCmds(line,argv);
+//     // int i = 0;
+//     // while(argv[i] != NULL){
+//     //     printf("%s\n",argv[i++]);
+//     // }
+
+//     target* test = malloc(sizeof(target));
+//     list_node* testcmds = malloc(sizeof(list_node));
+//     testcmds->val = line;
+//     testcmds->next = NULL;
+//     test->cmds = testcmds;
+//     test->cmds_size = 1;
+//     test->deps_size = 0;
+//     test->dependencies = NULL;
+//     test->name = file;
     
-    graph_node* gn = malloc(sizeof(graph_node));
-    gn->gnt = test;
-    gn->name = test->name;
-    gn->children = NULL;
+//     graph_node* gn = malloc(sizeof(graph_node));
+//     gn->gnt = test;
+//     gn->name = test->name;
+//     gn->children = NULL;
 
-    dfs(gn);
-}
+    
+//     runCommands(gn);
+// }

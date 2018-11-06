@@ -85,8 +85,9 @@ target* get_target(int *c, FILE* fp){
 	}	
 	while(*p != '\n' && *p != ':'){
 		if(*p==' ' || *p=='\t'){
-			fprintf(stderr, "Invalid Target!\nLine No:%d\n%s",line_count,line);
-			return NULL;
+			//fprintf(stderr, "Invalid Target!\nLine No:%d\n%s",line_count,line);
+			//return NULL;
+			*p = '\0';
 		}
 		p++;
 	}
@@ -127,7 +128,11 @@ target* get_target(int *c, FILE* fp){
 	}
 
 	//store all the cmds
-	while(*c =='\t'){
+	while(*c =='\t' || *c == '\n'){
+		if(*c=='\n'){
+			skip_empty(c,fp);
+			continue;
+		}
 		line = read_line(c,fp);
 		line_count++;
 		if(!line)return NULL;
