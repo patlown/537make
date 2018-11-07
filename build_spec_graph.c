@@ -246,7 +246,10 @@ int check_no_cycle(graph_node_list* gnl){
 
 
 int is_DAG(graph_node* gnode){
-    
+    if(gnode == NULL){
+        fprintf(stderr,"Failed buiding graph!\n");
+        exit(1);
+    }
     if(exists_in_graph_node_list(check_list->next,gnode->name)){
         fprintf(stderr,"The element %s is duplicated!!\n",gnode->name);
         return 0;
@@ -260,7 +263,15 @@ int is_DAG(graph_node* gnode){
     
     //recursive on each children
     if(gnode->gnt && gnode->gnt->deps_size){
+        if(gnode->children == NULL){
+            fprintf(stderr,"Error buiding graph!\n");
+            exit(1);
+        }
         for(int i = 0; i < gnode->gnt->deps_size;i++){
+            if(gnode->children[i] == NULL){
+                fprintf(stderr,"Error buiding graph!\n");
+                exit(1);
+            }
             if(!is_DAG(gnode->children[i])){
                 return 0;  
             } 

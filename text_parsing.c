@@ -27,7 +27,7 @@ target_node* parseFile(char * filename){
 	}
 	//create the start of the traget list
 	target_node *dummy = malloc(sizeof(target_node));
-	target_node *node_ptr = dummy;
+	dummy->next = NULL;
 	//initialize the char buffer wich pointing to the position we are reading
 	c = malloc(sizeof(int));
 	*c = fgetc(fp);
@@ -44,16 +44,16 @@ target_node* parseFile(char * filename){
 		//try to get target
 		target *tempt=get_target(c,fp);
 		if(!tempt){   //get target failed, return NULL
-			return NULL;
+			exit(1);
 		}
 		//create a target_node for this target and add the target_node list
 		target_node *tempnode = malloc(sizeof(target_node));
 		tempnode->t = tempt;
-		node_ptr->next = tempnode;
-		node_ptr = node_ptr->next;
+		tempnode->next = dummy->next;
+		dummy->next = tempnode;
 	}
-	node_ptr->next = NULL; //append a NULL and the end of the list 
-	return dummy->next;
+	dummy = dummy->next;
+	return dummy;
 }
 
 /* this func get a target assuming the fgetc points at the begining of a target return null if failed
@@ -70,7 +70,10 @@ target* get_target(int *c, FILE* fp){
 	
 	//read in the line which assumed to have target in it
 	char* line = read_line(c,fp);
-	if(!line) return NULL;
+	if(!line) {
+		free(t);
+		return NULL;
+	}
 	line_count++;
 	char *s = line, *p = line;
 	
@@ -78,7 +81,8 @@ target* get_target(int *c, FILE* fp){
 	if(!valid_target(s)){
 		//invalid target
 		fprintf(stderr, "Invalid Target!\nLine No:%d\n%s",line_count,line);
-		return NULL;
+		free(line);
+		exit(1);
 	}	
 	while(*p != '\n' && *p != ':'){
 		if(*p==' ' || *p=='\t'){
@@ -92,7 +96,7 @@ target* get_target(int *c, FILE* fp){
 	if(*p == '\n'){
 		//return incorrectly formatted line no :
 		fprintf(stderr, "Incorrectly formatted line!\nLine No:%d\n%s",line_count,line);
-		return NULL;
+		exit(1);
 	}
 	*p = '\0';
 	t->name = s;//store the target name
@@ -132,10 +136,11 @@ target* get_target(int *c, FILE* fp){
 		//reading a cmd line and determine if its a calid one; if invalid return NULL
 		line = read_line(c,fp);
 		line_count++;
-		if(!line)return NULL;
+		if(!line) return NULL;
 		s = line;
 		if(!valid_cmd(s)){
 			fprintf(stderr, "Invalid Cmd!\nLine No:%d\n%s",line_count,line);
+			free(line);
 			return NULL;
 		}
 		//add the new cmd line to the end of cmds list
@@ -210,6 +215,7 @@ char* read_line(int* c, FILE* fp){
 	}
 	//check that line isn't empty (this shouldn't happen)
 	if(index == 0){
+		free(buff);
 		return NULL;
 	}
     //try to append an '\n' at end
@@ -221,7 +227,6 @@ char* read_line(int* c, FILE* fp){
 			}else{
 				free(buff);
 				buff = buff_new;
-				cur_size*=2;
 			}
 	}
 	buff[index] = '\n';

@@ -81,7 +81,12 @@ void execute_curr(char* arg_line,char **argv){
         exit(1);
     }
     if(pid == 0){
-        execvp(*argv,argv);
+        if(argv == NULL){
+            fprintf(stderr,"Failed to excute command: %s\n",arg_line);
+            exit(1);
+        }
+            execvp(*argv,argv);
+        
         fprintf(stderr,"Failed to excute command: %s\n",arg_line);
         exit(1);
     }
