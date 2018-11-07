@@ -27,6 +27,7 @@ target_node* parseFile(char * filename){
 	}
 	//create the start of the traget list
 	target_node *dummy = malloc(sizeof(target_node));
+	target_node *ptr = dummy;
 	dummy->next = NULL;
 	//initialize the char buffer wich pointing to the position we are reading
 	c = malloc(sizeof(int));
@@ -49,11 +50,11 @@ target_node* parseFile(char * filename){
 		//create a target_node for this target and add the target_node list
 		target_node *tempnode = malloc(sizeof(target_node));
 		tempnode->t = tempt;
-		tempnode->next = dummy->next;
-		dummy->next = tempnode;
+		ptr->next = tempnode;
+		ptr = ptr->next;
 	}
-	dummy = dummy->next;
-	return dummy;
+	ptr->next = NULL;
+	return dummy->next;
 }
 
 /* this func get a target assuming the fgetc points at the begining of a target return null if failed

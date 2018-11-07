@@ -43,11 +43,11 @@ void dfs(graph_node* node){
         }
         //check for existence of file
         time_t parent_time = check_file_exists(node->gnt->name);
-        printf("time of this file: %ld\n",parent_time);
+        //printf("time of this file: %ld\n",parent_time);
         if(parent_time != 0){
             for(int i = 0; i< node->gnt->deps_size; i++){
                 time_t child_time = check_file_exists(node->children[i]->name);
-                printf("time of this file: %ld\n",child_time);
+                //printf("time of this file: %ld\n",child_time);
                 if(child_time != 0){
                     if(child_time > parent_time){
                         runCommands(node);
@@ -75,17 +75,14 @@ void execute_curr(char* arg_line,char **argv){
     int status;
 
     pid = fork();
-    printf("%d\n",pid);
+    //printf("%d\n",pid);
     if(pid < 0){
         fprintf(stderr,"Fork failed while processing line: %s\n",arg_line);
         exit(1);
     }
     if(pid == 0){
-        if(argv == NULL){
-            fprintf(stderr,"Failed to excute command: %s\n",arg_line);
-            exit(1);
-        }
-            execvp(*argv,argv);
+        
+        execvp(*argv,argv);
         
         fprintf(stderr,"Failed to excute command: %s\n",arg_line);
         exit(1);

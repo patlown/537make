@@ -4,12 +4,12 @@
 
 int main(int argc, char** argv){
 	
-	char make_file[] = "test.txt";
+	char make_file[] = "makefile";
 	target_node *t = parseFile(make_file);
 	if(!t){
 		return -1;
 	}else {
-		printf("parser completed!!\n");
+		//printf("parser completed!!\n");
 	}
     // target_node *ptrt = t;
 	// while(ptrt!=NULL){
@@ -21,7 +21,7 @@ int main(int argc, char** argv){
 	if(!list){
 		return -1;
 	}else {
-		printf("graph completed!!\n");
+		//printf("graph completed!!\n");
 	}
 	//graph_node_list *list_ptr = list;
 	// while(list_ptr!=NULL){
