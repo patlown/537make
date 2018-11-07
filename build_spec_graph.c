@@ -1,3 +1,6 @@
+/*
+Authors: Patrick Lown and Ge Xu
+*/
 #include "build_spec_graph.h"
 extern graph_node_list* start;
 extern graph_node_list* end;

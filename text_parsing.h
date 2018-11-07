@@ -1,3 +1,6 @@
+/*
+Authors: Patrick Lown and Ge Xu
+*/
 #ifndef TEXT_PARSING_H
 #define TEXT_PARSING_H
 

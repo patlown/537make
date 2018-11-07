@@ -1,3 +1,6 @@
+/*
+Authors: Patrick Lown and Ge Xu
+*/
 #ifndef PROC_CREATION_PROG_EXE_H
 #define PROC_CREATION_PROG_EXE_H
 

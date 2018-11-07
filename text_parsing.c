@@ -1,3 +1,6 @@
+/*
+Authors: Patrick Lown and Ge Xu
+*/
 #include "text_parsing.h"
 
 
@@ -283,42 +286,4 @@ void printt(target* t){
 		printf("------------------\n");
 
 }
-
-
-
-// int main(int argc, char** argv){
-// 	target_node *t = parseFile(argv[1]);
-//     target_node *ptr = t;
-// 	while(ptr!=NULL){
-// 		printt(ptr->t);
-// 		ptr = ptr->next;
-// 	}
-
-
-
-
-// 	// FILE *f = fopen(argv[1],"read");
-// 	// int *c = malloc(sizeof(int));
-// 	// *c = fgetc(f);
-// 	// printf("%s",read_line(c,f));
-// 	// skip_empty(c,f);
-// 	// target *tar = get_target(c,f);
-// 	// printt(tar);
-// 	// printf("%s\n",tar->name);
-// 	// list_node *ptr = tar->dependencies;
-
-// 	// while(ptr!=NULL){
-// 	// 	printf("%s ",ptr->val);
-// 	// 	ptr = ptr->next;
-// 	// }
-// 	// list_node *ptr1 = tar->cmds;
-// 	// while(ptr1!=NULL){
-// 	// 	printf("%s ",ptr1->val);
-// 	// 	ptr1 = ptr1->next;
-// 	// }
-	
-// 	//target_node *root =parseFile(argv[1]);
-// 	//print(root);
-	
-// }
 

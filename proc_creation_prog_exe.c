@@ -1,3 +1,6 @@
+/*
+Authors: Patrick Lown and Ge Xu
+*/
 #include "proc_creation_prog_exe.h"
 
 /* This function checks if the node passed in exists as a target, prints an error to stderr if it does not 
@@ -198,48 +201,3 @@ time_t check_file_exists(char *filename){
     }
     return 0;
 }
-
-
-// int main(){
-//     // char line[1024] = "gcc -c -Wall -Wextra readproc.c\n";
-//     // char  *argv[64]; 
-//     // parseCmds(line,argv);
-    
-//     // int i = 0;
-//     // while(argv[i] != NULL){
-//     //     printf("%s\n",argv[i++]);
-//     // }
-//     // execute_curr(argv);
-
-//     // char* filename = "test.txt";
-//     // //char* filename2 = "readproc.c";
-//     // time_t x = check_file_exists(filename);
-//     // printf("%d\n", (int)x);
-
-//     char file[15] = "text_parsing.o";
-//     char line[1024] = "	make clean\n";
-//     // char  *argv[64]; 
-//     // parseCmds(line,argv);
-//     // int i = 0;
-//     // while(argv[i] != NULL){
-//     //     printf("%s\n",argv[i++]);
-//     // }
-
-//     target* test = malloc(sizeof(target));
-//     list_node* testcmds = malloc(sizeof(list_node));
-//     testcmds->val = line;
-//     testcmds->next = NULL;
-//     test->cmds = testcmds;
-//     test->cmds_size = 1;
-//     test->deps_size = 0;
-//     test->dependencies = NULL;
-//     test->name = file;
-    
-//     graph_node* gn = malloc(sizeof(graph_node));
-//     gn->gnt = test;
-//     gn->name = test->name;
-//     gn->children = NULL;
-
-    
-//     runCommands(gn);
-// }
