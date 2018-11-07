@@ -2,22 +2,21 @@
 
 
 int line_count;
-int *c;
-//extern const int buffer_limit;
-//extern const int buffer_init;
+int *c;  //ptr used to track the position we are currently reading
 
 
 
-/*TODO:
-make sure target_node->next is pointing to NULL if it isn't pointing to another target node.
-I rely on that when traversing the target_nodes while building the graph.
 
-Also make sure the ends of the dependency and cmds list_nodes have a NULL next, as I'm assuming that when I traverse them.
+/* Note:
+** target_node->next is pointing to NULL if it isn't pointing to another target node.
+** Also the ends of the dependency and cmds list_nodes have a NULL next in the end of the list.
 */
 
-//TODO: can you briefly comment all the loops so we can see things at a higher level when reviewing the code.
 
-
+/* This function is used to parse a make file giving file name
+** it returns a ptr pointing to the first element of the target_node list
+** return NULL if failed
+*/
 target_node* parseFile(char * filename){
 	//open file
 	FILE *fp;
@@ -29,38 +28,36 @@ target_node* parseFile(char * filename){
 	//create the start of the traget list
 	target_node *dummy = malloc(sizeof(target_node));
 	target_node *node_ptr = dummy;
-	//initialize the char buffer
+	//initialize the char buffer wich pointing to the position we are reading
 	c = malloc(sizeof(int));
 	*c = fgetc(fp);
 	line_count = 0;
-
-
-	
-	
+    
+	//read throught the file 
 	while(1){
 		skip_empty(c,fp);
+		//stop at EOF
 		if(*c == EOF){
 			break;
 		}
+		//we already skip empty lines and assuming this line as the begining of a target
+		//try to get target
 		target *tempt=get_target(c,fp);
-		if(!tempt) return NULL;
-		//printt(tempt);
-		if(!tempt){
-			//print error 
+		if(!tempt){   //get target failed, return NULL
 			return NULL;
 		}
+		//create a target_node for this target and add the target_node list
 		target_node *tempnode = malloc(sizeof(target_node));
 		tempnode->t = tempt;
 		node_ptr->next = tempnode;
 		node_ptr = node_ptr->next;
 	}
-	node_ptr->next = NULL;
+	node_ptr->next = NULL; //append a NULL and the end of the list 
 	return dummy->next;
-
-	
 }
 
-//get a target assuming the fgetc points at the begining of a target return null if failed
+/* this func get a target assuming the fgetc points at the begining of a target return null if failed
+*/
 target* get_target(int *c, FILE* fp){
 	//initialize the target and its dependency and cmds list node
 	target* t = malloc(sizeof(target));
@@ -71,6 +68,7 @@ target* get_target(int *c, FILE* fp){
 	list_node *nodeptr = t->dependencies;
 	list_node *cmdptr = t->cmds;
 	
+	//read in the line which assumed to have target in it
 	char* line = read_line(c,fp);
 	if(!line) return NULL;
 	line_count++;
@@ -80,59 +78,58 @@ target* get_target(int *c, FILE* fp){
 	if(!valid_target(s)){
 		//invalid target
 		fprintf(stderr, "Invalid Target!\nLine No:%d\n%s",line_count,line);
-
 		return NULL;
 	}	
 	while(*p != '\n' && *p != ':'){
 		if(*p==' ' || *p=='\t'){
-			//fprintf(stderr, "Invalid Target!\nLine No:%d\n%s",line_count,line);
-			//return NULL;
+			//skip all empty spaces
 			*p = '\0';
 		}
 		p++;
 	}
+
+	//ptr should be stopped at ':' otherwise the line is invalid
 	if(*p == '\n'){
 		//return incorrectly formatted line no :
 		fprintf(stderr, "Incorrectly formatted line!\nLine No:%d\n%s",line_count,line);
 		return NULL;
 	}
 	*p = '\0';
-	t->name = s;
+	t->name = s;//store the target name
 	
 	//try to get all the dependencies
 	int endofline = 0;
 	while(!endofline){
-		
 		p++;
-		
+		//skip all empty spaces
 		while(*p == ' ' || *p == '\t'){p++;}
-		if(*p == '\n') break;
-		s = p;
-		while(*p!=' ' && *p!='\n' && *p!='\t'){ p++;}
+		if(*p == '\n') break;                         //if the line is ended just break
+		s = p;                                        //when find a begining of a dependency add set the s pointing to that
+		while(*p!=' ' && *p!='\n' && *p!='\t'){ p++;} //find the end of this dependency and set \0 to end that dependency  
 		if(*p ==' ' || *p == '\t'){
 			*p = '\0';
 		}
 		else{
 			*p = '\0';
-			endofline = 1;
-			//printf("check\n");
+			endofline = 1; //if the dependency is terminated by new line, means the current line is processed 
 		}
 		
+		//append to the end of dependency list
 		list_node *tempnode = malloc(sizeof(list_node));
-		//tempnode->next = NULL;
 		tempnode->val = s;
 		nodeptr->next = tempnode;
 		nodeptr = nodeptr->next;
 		t->deps_size++;
-
 	}
 
 	//store all the cmds
 	while(*c =='\t' || *c == '\n'){
+		//skip empty lines
 		if(*c=='\n'){
 			skip_empty(c,fp);
 			continue;
 		}
+		//reading a cmd line and determine if its a calid one; if invalid return NULL
 		line = read_line(c,fp);
 		line_count++;
 		if(!line)return NULL;
@@ -141,6 +138,7 @@ target* get_target(int *c, FILE* fp){
 			fprintf(stderr, "Invalid Cmd!\nLine No:%d\n%s",line_count,line);
 			return NULL;
 		}
+		//add the new cmd line to the end of cmds list
 		list_node *tempnode = malloc(sizeof(list_node));
 		tempnode->val = s;
 		cmdptr->next = tempnode;
@@ -157,14 +155,16 @@ target* get_target(int *c, FILE* fp){
 	return t;
 }
 
-//determine if given line begin with valid target
+/*func to determine if given line begin with valid target
+*/
 int valid_target(char *s){
 	if(*s == '\t' || *s == ' '){
 		return 0;
 	}
 	return 1;
 }
-//determine if given line begin with valid cmd
+/*function to determine if given line begin with valid cmd
+*/
 int valid_cmd(char *s){
 	if(*s == '\t' && *(s+1)!='\t' && *(s+1)!='\n' && *(s+1)!=' '){
 		return 1;
@@ -172,7 +172,8 @@ int valid_cmd(char *s){
 	return 0;
 }
 
-//this function skip empty lines
+/*this function skips empty lines and advances *c pointing to the first char after this line
+*/
 void skip_empty(int* c,FILE* fp){
 	while(*c == '\n' && *c != EOF){
 		*c = fgetc(fp);
@@ -180,7 +181,9 @@ void skip_empty(int* c,FILE* fp){
 	}
 }
 
-//function readin a line ssume not \n this 
+/*this function readin a line, asuming not begin with '\n'
+**return NULL if error occurs
+*/
 char* read_line(int* c, FILE* fp){
 	char* buff = malloc(buffer_init);
 	int index = 0,cur_size = buffer_init;
@@ -227,7 +230,9 @@ char* read_line(int* c, FILE* fp){
 	return buff;
 }
 
-//this function create a new buffer with doubled buffersize and copy its content
+/* this function create a new buffer with doubled buffersize and copy its content
+** return the newly created buff, and NULL if fail
+*/
 char* double_buff(char* buff, int cursize){
 	if(cursize == buffer_limit){
 				fprintf(stderr, "Line exceed max line limit!!\n");
@@ -246,7 +251,8 @@ char* double_buff(char* buff, int cursize){
 	return buff_double;
 }
 
-//test function for print name, dependencies and cmds for a single target
+/*This is a test function for print name, dependencies and cmds also their size for a single target
+*/
 void printt(target* t){
 		target *tar = t;
 		printf("%s\n",tar->name);
