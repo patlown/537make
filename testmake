@@ -1,0 +1,36 @@
+
+537make: main.o build_spec_graph.o text_parsing.o proc_creation_prog_exe.o
+	echo Building 537make
+	gcc -o 537make main.o build_spec_graph.o text_parsing.o proc_creation_prog_exe.o 
+	echo 537make built successfully!
+
+main.o: main.c build_spec_graph.h text_parsing.h proc_creation_prog_exe.h
+	echo Building main.o
+	gcc -g -Wall -Wextra -c main.c
+	echo main.o built successfully!
+
+build_spec_graph.o: build_spec_graph.c text_parsing.h
+	echo Building build_spec_graph.o
+	gcc -g -Wall -Wextra -c build_spec_graph.c
+	echo build_spec_graph.o built successfully!
+
+text_parsing.o: text_parsing.c text_parsing.h
+	echo Building text_parsing.o
+	gcc -g -Wall -Wextra -c text_parsing.c
+	echo text_parsing.o built successfully!
+
+proc_creation_prog_exe.o: proc_creation_prog_exe.c proc_creation_prog_exe.h build_spec_graph.h
+	echo Building proc_creation_prog_exe.o
+	gcc -g -Wall -Wextra -c proc_creation_prog_exe.c
+	echo proc_creation_prog_exe.o built successfully!
+
+clean_objs:  
+
+	rm -f main.o
+	rm -f build_spec_graph.o
+	rm -f text_parsing.o
+	rm -f proc_creation_prog_exe.o
+clean_537make:
+	rm -f 537make
+clean: clean_objs clean_537make
+

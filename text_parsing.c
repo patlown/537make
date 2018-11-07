@@ -54,7 +54,10 @@ target_node* parseFile(char * filename){
 		ptr = ptr->next;
 	}
 	ptr->next = NULL;
-	return dummy->next;
+	ptr = dummy;
+	dummy = dummy->next;
+	free(ptr);
+	return dummy;
 }
 
 /* this func get a target assuming the fgetc points at the begining of a target return null if failed

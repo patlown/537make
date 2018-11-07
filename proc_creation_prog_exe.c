@@ -23,7 +23,7 @@ void makeTargets(char* name, graph_node_list* gnl){
     }
     //if curr_graph_node stays null, then we never found the target in our graph_node_list
     if(curr_graph_node == NULL){
-        fprintf(stderr,"%s is not a valid target in this makefile",name);
+        fprintf(stderr,"%s is not a valid target in this makefile\n",name);
         exit(1);
     }
     //execute all commands of target recursively bottom up
@@ -111,6 +111,7 @@ void runCommands(graph_node* node){
     char* argv[arg_limit];
     for(int i = 0; i< node->gnt->cmds_size; i++){
         parseCmds(curr_cmd->val,argv);
+        if(argv[0]==NULL) continue;
         execute_curr(curr_cmd->val,argv);
         curr_cmd = curr_cmd->next;
     }
@@ -162,7 +163,7 @@ char* make_file_path(char* filename){
         strcat(path,app);
         strcat(path,filename);
     } else {
-        fprintf(stderr,"Malloc failed to allocate space to store filepath './%s'",filename);
+        fprintf(stderr,"Malloc failed to allocate space to store filepath './%s'\n",filename);
         exit(1);
     }
     return path;
@@ -192,7 +193,7 @@ time_t check_file_exists(char *filename){
         closedir(d);
     }
     else{
-        fprintf (stderr,"Couldn't open the current directory");
+        fprintf (stderr,"Couldn't open the current directory\n");
         exit(1);
     }
     return 0;

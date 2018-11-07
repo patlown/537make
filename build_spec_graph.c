@@ -170,7 +170,7 @@ graph_node** alloc_graph_node_children(int size){
     if(size == 0){
         children_ptr = NULL;
     }else{
-        children_ptr = (graph_node**)malloc(size*sizeof(graph_node*));
+        children_ptr = (graph_node**)calloc(size,sizeof(graph_node*));
     }
     
     return children_ptr;
