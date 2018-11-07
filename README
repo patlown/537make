@@ -1,1 +1,21 @@
-Write your README here
+Usage:
+
+    '537make' or '537make <target>'
+
+This will only work if you have a valid makefile in the current directory.  A valid makefile follows the format below.
+
+This program will handle a makefile that is formatted as:
+
+<target>: <dependency> <dependency> <dependency> <etc>
+    <command>
+    <command>
+    <command>
+    <etc>
+
+All targets will be recursively built by first building their dependencies.  New lines are acceptable between targets and commands.  All commands must start with a tab.
+
+The program will print an error for a line that is formatted incorrectly.
+
+Has three main modules, a module that parses the makefile into structures the program can handle (text_parsing.c/h), a module that builds and tests for correctness a dependency graph
+(build_spec_graph.c/h) and a module that iterates through our graph and runs the commands for each target in the correct order (proc_creation_prog_exe.c/h).  These modules allow main to use high
+level function calls to execute the makefile.
