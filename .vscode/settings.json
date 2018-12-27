@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "text_parsing.h": "c",
+        "build_spec_graph.h": "c",
+        "proc_creation_prog_exe.h": "c"
+    }
+}
