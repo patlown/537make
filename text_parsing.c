@@ -1,3 +1,4 @@
+
 /*
 Authors: Patrick Lown and Ge Xu
 */
@@ -158,6 +159,7 @@ target* get_target(int *c, FILE* fp){
 		t->cmds_size++;
 	}
 
+
 	//end the deps and cmds list with NULL and move pointer to start of each list
 	nodeptr->next = NULL;
 	cmdptr->next = NULL;
@@ -184,6 +186,7 @@ int valid_cmd(char *s){
 	return 0;
 }
 
+
 /*this function skips empty lines and advances *c pointing to the first char after this line
 */
 void skip_empty(int* c,FILE* fp){
@@ -191,8 +194,6 @@ void skip_empty(int* c,FILE* fp){
 		*c = fgetc(fp);
 		line_count++;
 	}
-}
-
 /*this function readin a line, asuming not begin with '\n'
 **return NULL if error occurs
 */

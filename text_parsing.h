@@ -12,6 +12,7 @@ Authors: Patrick Lown and Ge Xu
 static int const buffer_limit = 1024;
 static int const buffer_init = 64;
 
+
 typedef struct list_node list_node;
 typedef struct target target;
 typedef struct target_node target_node;
@@ -28,6 +29,7 @@ struct list_node{
 /* This structure stores names,dependencies and count,commands and counts every target
 */
 struct target{
+
 	char* name;
 	list_node* dependencies;
 	int deps_size;
@@ -56,6 +58,11 @@ void printt(target *t);
 
 
 
+
+typedef struct target_list{
+	target** targets;
+	int size;
+}target_list;
 
 
 
